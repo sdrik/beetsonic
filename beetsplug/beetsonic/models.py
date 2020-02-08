@@ -202,9 +202,11 @@ class BeetsModel(object):
     def get_music_directory(self, object_id):
         beet_id = BeetIdType.get_type(object_id)
         children = []
+        parent = None
         if beet_id[0] is BeetIdType.album:
             album = self.lib.get_album(beet_id[1])
             name = album.album
+            parent = BeetIdType.get_artist_id(album.albumartist)
             children = [self._create_song(item) for item in album.items()]
         elif beet_id[0] is BeetIdType.artist:
             name = beet_id[1]
@@ -216,8 +218,9 @@ class BeetsModel(object):
             # It is the Item here
             item = self.lib.get_item(beet_id[1])
             name = item.title
+            parent = BeetIdType.get_album_id(item.album_id)
         return utils.create_directory(object_id, name, children,
-                                      parent=beet_id[1])
+                                      parent=parent)
 
     def get_random_songs(self, size=10, genre=None, from_year=None,
                          to_year=None, music_folder_id=None):
