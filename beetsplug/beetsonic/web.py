@@ -190,6 +190,11 @@ class ApiBlueprint(Blueprint):
         def get_music_directory(response):
             response.directory = model.get_music_directory(request.args[u'id'])
 
+        @self.route('/getSong.view')
+        @self.require_arguments([u'id'])
+        def get_song(response):
+            response.song = model.get_song(request.args[u'id'])
+
         # TODO contact MusicBrainz for artist information
         @self.route('/getArtistInfo.view')
         @self.require_arguments([u'id'])

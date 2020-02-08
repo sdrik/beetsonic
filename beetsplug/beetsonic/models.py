@@ -427,6 +427,18 @@ class BeetsModel(object):
             genre=album.genre,
         )
 
+    def get_song(self, item_id):
+        """
+        Get a Child object from an Id.
+        :param item_id: The Id of the Item.
+        :return: The Child object.
+        """
+        beet_id = BeetIdType.get_type(item_id)
+        if beet_id[0] is not BeetIdType.item:
+            raise ValueError('Wrong Item Id: {}'.format(item_id))
+        item = self.lib.get_item(beet_id[1])
+        return self._create_song(item)
+
     def get_artist_with_albums(self, artist_id):
         """
         Get an artist with associated albums from an artist id.
