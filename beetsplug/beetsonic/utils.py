@@ -415,5 +415,5 @@ class JsonEncoder(json.JSONEncoder):
 
     def default(self, o):
         if isinstance(o, datetime):
-            return time.mktime(o.timetuple())
+            return int(time.mktime(o.timetuple()))
         return json.JSONEncoder.default(self, o)
