@@ -444,7 +444,7 @@ class BeetsModel(object):
             items = album.items()
             album_id3s.append(
                 utils.create_album_id3(
-                    id=BeetIdType.get_album_id(album.album),
+                    id=BeetIdType.get_album_id(album.id),
                     name=album.album,
                     song_count=len(items),
                     duration=sum(item.length for item in items),
