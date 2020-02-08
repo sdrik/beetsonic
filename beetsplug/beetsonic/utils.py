@@ -68,6 +68,22 @@ def create_artist(id, name, **kwargs):
     )
 
 
+def create_artist_id3(id, name, album_count, **kwargs):
+    """
+    Helper method to create an ArtistID3 object.
+    :param name: Name of the artist
+    :param album_count: Number of albums of the artist
+    :return: The ArtistID3 object
+    """
+
+    return bindings.ArtistID3(
+        id=id,
+        name=name,
+        albumCount=album_count,
+        **kwargs
+    )
+
+
 def create_artist_with_albums_id3(id, name, album_count, albums=[], **kwargs):
     """
     Create a ArtistWithAlbumsID3 object.
@@ -215,7 +231,7 @@ def create_user(username, scrobbling_enabled, admin_role, settings_role,
     return user
 
 
-def create_indexes(artists, ignored_articles_str):
+def _create_indexes(artists, ignored_articles_str, indexes_type, index_type):
     """
     Create indexes from a list of Artist objects.
     An index consists of an uppercase character, mapping to all the Artists
@@ -225,7 +241,7 @@ def create_indexes(artists, ignored_articles_str):
     :return: An Indexes object
     """
     ignored_articles = ignored_articles_str.split(' ')
-    indexes = bindings.Indexes()
+    indexes = indexes_type()
     indexes.ignoredArticles = ignored_articles_str
 
     def index_func(map, artist):
@@ -247,13 +263,23 @@ def create_indexes(artists, ignored_articles_str):
         dict()
     )
     for char, artists in sorted(char_map.items()):
-        index = bindings.Index(name=char)
+        index = index_type(name=char)
         for artist in artists:
             index.append(artist)
         indexes.append(index)
 
     return indexes
 
+
+def create_indexes(artists, ignored_articles_str):
+    return _create_indexes(artists, ignored_articles_str,
+                           indexes_type=bindings.Indexes,
+                           index_type=bindings.Index)
+
+def create_artists(artists, ignored_articles_str):
+    return _create_indexes(artists, ignored_articles_str,
+                           indexes_type=bindings.ArtistsID3,
+                           index_type=bindings.IndexID3)
 
 def create_music_folders(music_folders):
     """

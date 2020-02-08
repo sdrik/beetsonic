@@ -109,6 +109,11 @@ class BeetsModel(object):
         return utils.create_artist(BeetIdType.get_artist_id(name), name,
                                    **kwargs)
 
+    @staticmethod
+    def _create_artist_id3(name, album_count, **kwargs):
+        return utils.create_artist_id3(BeetIdType.get_artist_id(name), name,
+                                   album_count, **kwargs)
+
     def _create_song(self, item):
         """
         Create a Child object from beets' Item.
@@ -155,6 +160,17 @@ class BeetsModel(object):
                 'SELECT DISTINCT albumartist FROM albums ORDER BY albumartist'
             )
         return [self._create_artist(row[0]) for row in rows]
+
+    def get_album_artists_id3(self):
+        """
+        Get all album artists
+        :return: List of ArtistID3 objects
+        """
+        with self.lib.transaction() as tx:
+            rows = tx.query(
+                'SELECT albumartist, COUNT(1) FROM albums GROUP BY albumartist ORDER BY albumartist'
+            )
+        return [self._create_artist_id3(row[0], row[1]) for row in rows]
 
     def get_singletons(self):
         """

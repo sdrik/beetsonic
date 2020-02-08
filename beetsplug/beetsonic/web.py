@@ -157,6 +157,12 @@ class ApiBlueprint(Blueprint):
                 indexes.append(child)
             response.indexes = indexes
 
+        @self.route('/getArtists.view')
+        def get_artists(response):
+            album_artists = model.get_album_artists_id3()
+            response.artists = utils.create_artists(album_artists,
+                                           configs['ignoredArticles'])
+
         @self.route('/getUser.view')
         @self.require_arguments([u'username'])
         def get_user(response):
