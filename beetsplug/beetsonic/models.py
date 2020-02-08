@@ -323,8 +323,8 @@ class BeetsModel(object):
         genre_objs = [
             utils.create_genre(
                 genre,
-                album_genre_map[genre] if album_genre_map.has_key(genre) else 0,
-                item_genre_map[genre] if item_genre_map.has_key(genre) else 0)
+                album_genre_map[genre] if genre in album_genre_map else 0,
+                item_genre_map[genre] if genre in item_genre_map else 0)
             for genre in all_genres]
         return utils.create_genres(genre_objs)
 

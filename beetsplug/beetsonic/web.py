@@ -15,7 +15,7 @@ from flask import send_file
 from flask.views import View
 from flask_cors import CORS
 
-import bindings
+from beetsplug.beetsonic import bindings
 from beetsplug.beetsonic import errors
 from beetsplug.beetsonic import utils
 from beetsplug.beetsonic.models import EntityNotFoundError
@@ -306,8 +306,8 @@ class ApiBlueprint(Blueprint):
                 return ResponseView(self.required_parameter_missing). \
                     dispatch_request()
             client_version = request.args.get('v')
-            client_version_parts = map(int, client_version.split('.'))
-            server_version_parts = map(int, SUBSONIC_API_VERSION.split('.'))
+            client_version_parts = list(map(int, client_version.split('.')))
+            server_version_parts = list(map(int, SUBSONIC_API_VERSION.split('.')))
             if client_version_parts[0] > server_version_parts[0]:
                 return ResponseView(self.server_upgrade).dispatch_request()
             elif client_version_parts[0] < server_version_parts[0]:
@@ -479,7 +479,7 @@ class ApiBlueprint(Blueprint):
         :param generate_response_func: Function used to generate the response
         :return: None
         """
-        for rule, route_fn in rule_map.iteritems():
+        for rule, route_fn in rule_map.items():
             self.add_url_rule(
                 rule,
                 view_func=ResponseView.as_view(

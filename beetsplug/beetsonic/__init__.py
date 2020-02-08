@@ -18,8 +18,8 @@
 from beets.plugins import BeetsPlugin
 from beets.ui import Subcommand
 
-from models import BeetsModel
-from web import SubsonicServer
+from beetsplug.beetsonic.models import BeetsModel
+from beetsplug.beetsonic.web import SubsonicServer
 
 
 class BeetsonicPlugin(BeetsPlugin):
@@ -43,14 +43,14 @@ class BeetsonicPlugin(BeetsPlugin):
             # Get all the args and opts into one variable
 
             configs = {
-                u'host': self.config['host'].get(unicode),
+                u'host': self.config['host'].as_str(),
                 u'port': self.config['port'].get(int),
-                u'cors': self.config['cors'].get(unicode),
+                u'cors': self.config['cors'].as_str(),
                 u'playlist_dir': self.config['playlist_dir'].as_filename(),
                 u'debug': opts.debug,
                 u'username': opts.username,
                 u'password': opts.password,
-                u'ignoredArticles': self.config['ignoredArticles'].get(unicode),
+                u'ignoredArticles': self.config['ignoredArticles'].as_str(),
             }
             app = SubsonicServer(model, configs, __name__)
             app.run(

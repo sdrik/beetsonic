@@ -7,6 +7,7 @@ import json
 import os
 import time
 from datetime import datetime
+from functools import reduce
 
 import pyxb
 
@@ -245,7 +246,7 @@ def create_indexes(artists, ignored_articles_str):
         artists,
         dict()
     )
-    for char, artists in sorted(char_map.iteritems()):
+    for char, artists in sorted(char_map.items()):
         index = bindings.Index(name=char)
         for artist in artists:
             index.append(artist)
