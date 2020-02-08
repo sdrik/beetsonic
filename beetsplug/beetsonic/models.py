@@ -90,6 +90,16 @@ class BeetIdType(enum.Enum):
 class BeetsModel(object):
     def __init__(self, lib):
         self.lib = lib
+        self.basedir = lib.directory
+        if not isinstance(self.basedir, six.string_types):
+            self.basedir = self.basedir.decode()
+
+    def _resolve_path(self, path, relative=False):
+        if not path:
+            return None
+        if not isinstance(path, six.string_types):
+            path = path.decode()
+        return os.path.relpath(path, self.basedir) if relative else path
 
     @staticmethod
     def _create_artist(name, **kwargs):
@@ -99,8 +109,7 @@ class BeetsModel(object):
         return utils.create_artist(BeetIdType.get_artist_id(name), name,
                                    **kwargs)
 
-    @staticmethod
-    def _create_song(item):
+    def _create_song(self, item):
         """
         Create a Child object from beets' Item.
         :param item: The beet's Item object.
@@ -110,9 +119,7 @@ class BeetsModel(object):
         album_id = None
         if item.album_id:
             album_id = BeetIdType.get_album_id(item.album_id)
-        path = item.path
-        if isinstance(path, six.string_types):
-            path = item.path.decode('utf-8')
+        path = self._resolve_path(item.path, relative=True)
         return utils.create_song(
             item_id, item.title, album=item.album, artist=item.artist,
             year=item.year, genre=item.genre, coverArt=album_id,
@@ -247,7 +254,7 @@ class BeetsModel(object):
         item = self.lib.get_item(id)
         if not item:
             raise ValueError('Song with id {} not found'.format(id))
-        return item.path
+        return self._resolve_path(item.path)
 
     @staticmethod
     def get_user(username):
@@ -286,7 +293,7 @@ class BeetsModel(object):
             albums = self._get_albums_from_artist(beet_id[1], columns)
             albums = [album for album in albums if album['artpath']]
             if len(albums) > 0:
-                location = str(albums[0]['artpath'])
+                location = albums[0]['artpath']
         elif beet_id[0] is BeetIdType.item:
             item = self.lib.get_item(beet_id[1])
             if item:
@@ -294,7 +301,7 @@ class BeetsModel(object):
                 if album and album.artpath:
                     location = album.artpath
 
-        return location
+        return self._resolve_path(location)
 
     @staticmethod
     def get_lyrics(artist, title):
