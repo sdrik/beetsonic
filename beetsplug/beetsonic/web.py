@@ -20,7 +20,7 @@ from beetsplug.beetsonic import errors
 from beetsplug.beetsonic import utils
 from beetsplug.beetsonic.models import EntityNotFoundError
 
-SUBSONIC_API_VERSION = u'1.14.0'
+SUBSONIC_API_VERSION = u'1.16.1'
 
 
 class ResponseView(View):
