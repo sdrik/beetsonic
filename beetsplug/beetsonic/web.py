@@ -205,7 +205,13 @@ class ApiBlueprint(Blueprint):
         @self.route('/getArtistInfo.view')
         @self.require_arguments([u'id'])
         def get_artist_info(response):
-            response.artistInfo = utils.create_artist_info()
+            response.artistInfo = utils.create_artist_info(model.get_artist_mbid(request.args[u'id']))
+
+        # TODO contact MusicBrainz for artist information
+        @self.route('/getArtistInfo2.view')
+        @self.require_arguments([u'id'])
+        def get_artist_info2(response):
+            response.artistInfo2 = utils.create_artist_info2(model.get_artist_mbid(request.args[u'id']))
 
         @self.route('/getLyrics.view')
         def get_lyrics(response):

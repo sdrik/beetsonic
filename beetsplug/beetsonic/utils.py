@@ -321,13 +321,26 @@ def create_songs(child_objects):
     return songs
 
 
-def create_artist_info(**kwargs):
+def create_artist_info(mb_artistid, **kwargs):
     """
     Create an ArtistInfo object.
     :param kwargs: The properties of the ArtistInfo object.
     :return: The ArtistInfo object.
     """
-    return bindings.ArtistInfo(**kwargs)
+    info = bindings.ArtistInfo(**kwargs)
+    info.musicBrainzId = mb_artistid
+    return info
+
+
+def create_artist_info2(mb_artistid, **kwargs):
+    """
+    Create an ArtistInfo2 object.
+    :param kwargs: The properties of the ArtistInfo2 object.
+    :return: The ArtistInfo2 object.
+    """
+    info = bindings.ArtistInfo2(**kwargs)
+    info.musicBrainzId = mb_artistid
+    return info
 
 
 def create_lyrics(content, **kwargs):

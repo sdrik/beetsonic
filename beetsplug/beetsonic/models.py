@@ -492,6 +492,16 @@ class BeetsModel(object):
             coverArt=artist_id,
         )
 
+    def get_artist_mbid(self, artist_id):
+        beet_id = BeetIdType.get_type(artist_id)
+        if beet_id[0] is not BeetIdType.artist:
+            raise ValueError('Wrong Artist Id: {}'.format(artist_id))
+        with self.lib.transaction() as tx:
+            rows = tx.query('SELECT DISTINCT mb_albumartistid FROM albums WHERE albumartist=?', (beet_id[1],))
+        if len(rows) < 1:
+            raise EntityNotFoundError('Artist {} not found'.format(beet_id[1]))
+        return rows[0][0]
+
 
 class EntityNotFoundError(Exception):
     pass
