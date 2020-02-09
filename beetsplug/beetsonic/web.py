@@ -390,7 +390,7 @@ class ApiBlueprint(Blueprint):
                 salt = request.args.get('s')
                 received_token = request.args.get('t')
                 message = hashlib.md5()
-                message.update(configs[u'password'] + salt)
+                message.update((configs[u'password'] + salt).encode('utf-8'))
                 expected_token = message.hexdigest()
                 if received_token != expected_token:
                     abort(403)
