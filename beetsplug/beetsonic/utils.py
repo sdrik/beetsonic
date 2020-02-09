@@ -40,6 +40,11 @@ def element_to_obj(element, use_name=True):
             if child == child_obj:
                 child_obj = {child_element: child_obj}
             attr_map.update(child_obj)
+        if element._IsMixed():
+            content = ' '.join([c.value
+                                for c in element.orderedContent()
+                                if isinstance(c, pyxb.binding.basis.NonElementContent)])
+            attr_map.update({'value': content})
 
         if use_name:
             attr_map = {element._element().name().localName(): attr_map}
