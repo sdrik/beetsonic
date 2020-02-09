@@ -471,7 +471,7 @@ class BeetsModel(object):
                 children, [username],
                 BeetIdType.get_playlist_id(playlist_filename),
                 playlist_name, num_songs, duration, last_modified,
-                last_modified)
+                last_modified, owner=username)
         except IOError:
             return None
 
