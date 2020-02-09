@@ -216,7 +216,7 @@ class ApiBlueprint(Blueprint):
 
         @self.route('/getRandomSongs.view')
         def get_random_songs(response):
-            size = request.args.get('size', 10)
+            size = int(request.args.get('size', 10))
             if size < 0:
                 size = 0
             elif size > 500:
