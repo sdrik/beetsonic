@@ -39,6 +39,8 @@ class BeetIdType(enum.Enum):
         :param value: the Id value.
         :return: the BeetIdType Enum.
         """
+        if value.startswith('pl-'):
+            value = value[3:]
         value_parts = value.split(':')
         if len(value_parts) <= 1:
             raise ValueError('Invalid Id: {}'.format(value))
