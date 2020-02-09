@@ -238,6 +238,79 @@ class BeetsModel(object):
         return utils.create_directory(object_id, name, children,
                                       parent=parent)
 
+    def get_album_list2(self, query_type, size, offset, from_year, to_year, genre):
+        columns = {
+            'id': 'a.id',
+            'album': 'a.album',
+            'albumartist': 'a.albumartist',
+            'year': 'a.year',
+            'genre': 'a.genre',
+            'added': 'a.added',
+            'song_count': 'COUNT(i.id)',
+            'duration': 'SUM(i.length)',
+        }
+        tables = 'albums a LEFT JOIN items i ON a.id=i.album_id'
+        filters = ['1=1']
+        params = []
+        groups = ['a.id']
+        orders = []
+
+        if genre:
+            filters.append('a.genre=?')
+            params.append(genre)
+        if from_year:
+            filters.append('a.year>=?')
+            params.append(from_year)
+        if to_year:
+            filters.append('a.year<=?')
+            params.append(to_year)
+        if query_type == 'newest':
+            orders.append('a.added DESC')
+        elif query_type == 'alphabeticalByName':
+            orders.append('a.album ASC')
+            orders.append('a.albumartist ASC')
+            orders.append('a.year ASC')
+        elif query_type == 'byYear':
+            orders.append('a.year ASC')
+            orders.append('a.albumartist ASC')
+            orders.append('a.album ASC')
+        else:
+            orders.append('a.albumartist ASC')
+            orders.append('a.album ASC')
+            orders.append('a.year ASC')
+
+        query = 'SELECT {} FROM {} WHERE {} GROUP BY {} ORDER BY {}'.format(
+            ','.join(columns.values()),
+            tables,
+            ' AND '.join(filters),
+            ','.join(groups),
+            ','.join(orders)
+        )
+
+        with self.lib.transaction() as tx:
+            rows = tx.query(query, params)
+
+        number = min(len(rows), size)
+        if query_type == 'random':
+            rows = random.sample(rows, number)
+        else:
+            rows = rows[offset:offset+number]
+
+        albums = [dict(zip(columns.keys(), row)) for row in rows]
+        albums = [utils.create_album_id3(
+            id=BeetIdType.get_album_id(album['id']),
+            name=album['album'],
+            song_count=album['song_count'],
+            duration=album['duration'],
+            created=datetime.fromtimestamp(album['added']),
+            artist=album['albumartist'],
+            artistId=BeetIdType.get_artist_id(album['albumartist']),
+            coverArt=BeetIdType.get_album_id(album['id']),
+            year=album['year'],
+            genre=album['genre'],
+        ) for album in albums]
+        return utils.create_album_list2(albums)
+
     def get_random_songs(self, size=10, genre=None, from_year=None,
                          to_year=None, music_folder_id=None):
         """

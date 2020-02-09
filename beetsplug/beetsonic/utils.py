@@ -113,6 +113,12 @@ def create_artist_with_albums_id3(id, name, album_count, albums=[], **kwargs):
     return artist
 
 
+def create_album_list2(albums=[]):
+    albumlist = bindings.AlbumList2()
+    for album in albums:
+        albumlist.append(album)
+    return albumlist
+
 def create_song(id, title, **kwargs):
     """
     Helper method to create a Child object, representing a Song.

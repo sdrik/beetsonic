@@ -163,6 +163,44 @@ class ApiBlueprint(Blueprint):
             response.artists = utils.create_artists(album_artists,
                                            configs['ignoredArticles'])
 
+        @self.route('/getAlbumList2.view')
+        @self.require_arguments([u'type'])
+        def get_album_list2(response):
+            query_type = request.args.get(u'type')
+            if query_type not in ['random', 'newest', 'frequent', 'recent',
+                             'starred', 'alphabeticalByName',
+                             'alphabeticalByArtist', 'byYear', 'byGenre']:
+                self.required_parameter_missing(response)
+                return response
+
+            if query_type == 'byYear':
+                if 'fromYear' not in request.args or 'toYear' not in request.args:
+                    self.required_parameter_missing(response)
+                    return response
+            elif query_type == 'byGenre':
+                if 'genre' not in request.args:
+                    self.required_parameter_missing(response)
+                    return response
+
+            size = int(request.args.get('size', 10))
+            if size < 0:
+                size = 0
+            elif size > 500:
+                size = 500
+            offset = int(request.args.get('offset', 0))
+            from_year = request.args.get('fromYear', None)
+            to_year = request.args.get('toYear', None)
+            genre = request.args.get('genre', None)
+
+            response.albumList2 = model.get_album_list2(
+                query_type=query_type,
+                size=size,
+                offset=offset,
+                from_year=from_year,
+                to_year=to_year,
+                genre=genre
+            )
+
         @self.route('/getUser.view')
         @self.require_arguments([u'username'])
         def get_user(response):
