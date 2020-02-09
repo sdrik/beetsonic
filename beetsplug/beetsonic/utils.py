@@ -35,8 +35,11 @@ def element_to_obj(element, use_name=True):
                           for el in element._ElementMap.keys()
                           if getattr(element, el.localName()) is not None]
         for child_element in child_elements:
-            attr_map.update(
-                element_to_obj(getattr(element, child_element), True))
+            child = getattr(element, child_element)
+            child_obj = element_to_obj(child, True)
+            if child == child_obj:
+                child_obj = {child_element: child_obj}
+            attr_map.update(child_obj)
 
         if use_name:
             attr_map = {element._element().name().localName(): attr_map}
